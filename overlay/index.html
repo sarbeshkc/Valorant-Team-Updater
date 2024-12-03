@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Tournament Overlay</title>
+    <style>
+        :root {
+            --team1-color: rgb(76, 229, 201);
+            --team2-color: rgb(255, 139, 139);
+            --bg-dark: rgba(0, 0, 0, 0.95);
+            --accent-line: #FF4655;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            width: 1920px;
+            height: 97px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .scoreboard-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                var(--bg-dark) 0%,
+                rgba(0, 0, 0, 0.85) 100%
+            );
+        }
+
+        .top-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-line);
+            z-index: 2;
+        }
+
+        .scoreboard {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            padding: 0 20px;
+        }
+
+        .team-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .team-name {
+            font-size: 24px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .team-left .team-name {
+            color: var(--team1-color);
+        }
+
+        .team-right .team-name {
+            color: var(--team2-color);
+        }
+
+        .stage-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 150px;
+        }
+
+        .match-stage {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .map-name {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .diagonal-line {
+            width: 15px;
+            height: 2px;
+            background: var(--accent-line);
+        }
+
+        .diagonal-line.left {
+            transform: rotate(45deg);
+        }
+
+        .diagonal-line.right {
+            transform: rotate(-45deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard-container">
+        <div class="top-line"></div>
+        <div class="scoreboard">
+            <!-- Team 1 Section -->
+            <div class="team-section team-left">
+                <div class="team-name" id="team1-name">TEAM 1</div>
+            </div>
+
+            <!-- Center Section -->
+            <div class="stage-container">
+                <div class="match-stage">
+                    <div class="diagonal-line left"></div>
+                    <span id="event-stage">FINAL</span>
+                    <div class="diagonal-line right"></div>
+                </div>
+                <div class="map-name" id="map-name"></div>
+            </div>
+
+            <!-- Team 2 Section -->
+            <div class="team-section team-right">
+                <div class="team-name" id="team2-name">TEAM 2</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateElement(element, value) {
+            if (value === undefined || value === null) return;
+            element.textContent = value;
+        }
+
+        async function updateOverlay() {
+            try {
+                const response = await fetch('http://localhost:8080/data');
+                const data = await response.json();
+
+                // Update elements
+                updateElement(document.getElementById('team1-name'), data.team1_name);
+                updateElement(document.getElementById('team2-name'), data.team2_name);
+                updateElement(document.getElementById('event-stage'), data.event_stage);
+                updateElement(document.getElementById('map-name'), data.map_name);
+
+            } catch (error) {
+                console.error('Error updating overlay:', error);
+            }
+        }
+
+        // Update every second
+        setInterval(updateOverlay, 1000);
+        // Initial update
+        updateOverlay();
+    </script>
+</body>
+</html>

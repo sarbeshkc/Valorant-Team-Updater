@@ -1,0 +1,17 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": 8080
+    },
+    "paths": {
+        "data_dir": "data",
+        "assets_dir": "assets",
+        "overlay_dir": "overlay"
+    },
+    "defaults": {
+        "team1_color": "#2d7a5d",
+        "team2_color": "#7a2d2d",
+        "stage": "FINAL"
+    },
+    "update_interval": 1000
+}

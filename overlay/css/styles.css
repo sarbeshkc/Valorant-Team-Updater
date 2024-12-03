@@ -1,0 +1,212 @@
+/* Base styles */
+:root {
+    --team1-color: #2d7a5d;
+    --team2-color: #7a2d2d;
+    --background-opacity: 0.9;
+    --text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: transparent;
+}
+
+/* Scoreboard Container */
+.scoreboard-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+}
+
+.scoreboard {
+    width: 1000px;
+    height: 80px;
+    background: linear-gradient(
+        90deg, 
+        rgba(0, 0, 0, var(--background-opacity)) 0%, 
+        rgba(0, 0, 0, calc(var(--background-opacity) - 0.1)) 50%, 
+        rgba(0, 0, 0, var(--background-opacity)) 100%
+    );
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Team Styles */
+.team {
+    height: 100%;
+    width: 440px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.team-left {
+    background: linear-gradient(
+        90deg, 
+        var(--team1-color) 0%, 
+        rgba(45, 122, 93, 0) 100%
+    );
+    border-radius: 8px 0 0 8px;
+    justify-content: flex-start;
+}
+
+.team-right {
+    background: linear-gradient(
+        90deg, 
+        rgba(122, 45, 45, 0) 0%, 
+        var(--team2-color) 100%
+    );
+    border-radius: 0 8px 8px 0;
+    justify-content: flex-end;
+}
+
+/* Logo Styles */
+.team-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin: 0 15px;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Team Information */
+.team-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+.team-name {
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: var(--text-shadow);
+}
+
+.score {
+    font-size: 36px;
+    font-weight: bold;
+    min-width: 40px;
+    text-align: center;
+    text-shadow: var(--text-shadow);
+    color: white;
+}
+
+/* Center Information */
+.center-info {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+.match-stage {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: var(--text-shadow);
+}
+
+.timer {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+    text-shadow: var(--text-shadow);
+}
+
+/* Agent Icons Section */
+.agent-icons {
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 100px;
+}
+
+.agent-icons-team {
+    display: flex;
+    gap: 10px;
+}
+
+.agent-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Animations */
+@keyframes scoreChange {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.score-changed {
+    animation: scoreChange 0.3s ease-in-out;
+}
+
+/* Map Information */
+.map-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    font-size: 18px;
+    text-shadow: var(--text-shadow);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1920px) {
+    .scoreboard {
+        width: 800px;
+    }
+    
+    .team {
+        width: 350px;
+    }
+    
+    .team-name {
+        font-size: 24px;
+    }
+    
+    .score {
+        font-size: 32px;
+    }
+}
