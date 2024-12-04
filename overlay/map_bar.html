@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Map Bar</title>
+    <style>
+        :root {
+            --accent-color: #FF4655;
+            --bg-dark: rgba(17, 17, 17, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            width: 1920px;
+            height: 50px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .map-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(0, 0, 0, 0.8) 100%
+            );
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .maps-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            height: 100%;
+            padding: 8px 0;
+        }
+
+        .map-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 15px;
+            position: relative;
+        }
+
+        .map-info::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .map-info:last-child::after {
+            display: none;
+        }
+
+        .label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .current-map {
+            color: var(--accent-color);
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .other-map {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tournament-section {
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .tournament-section::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tournament-info {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .red-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-bar">
+        <div class="red-line"></div>
+        <div class="maps-section">
+            <!-- Before Map -->
+            <div id="before-map-section" class="map-info hidden">
+                <span class="label">BEFORE:</span>
+                <span class="other-map" id="before-map"></span>
+            </div>
+
+            <!-- Current Map -->
+            <div class="map-info">
+                <span class="label">CURRENT:</span>
+                <span class="current-map" id="current-map"></span>
+            </div>
+
+            <!-- Next Map -->
+            <div id="next-map-section" class="map-info hidden">
+                <span class="label">NEXT:</span>
+                <span class="other-map" id="next-map"></span>
+            </div>
+        </div>
+
+        <div class="tournament-section">
+            <div class="tournament-info" id="tournament-info"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentValues = {};
+
+        async function updateMapBar() {
+            try {
+                const response = await fetch('http://localhost:8080/data');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Update tournament name
+                if (data.tournament_name !== currentValues.tournament_name) {
+                    document.getElementById('tournament-info').textContent = data.tournament_name || '';
+                    currentValues.tournament_name = data.tournament_name;
+                }
+
+                // Update current map
+                if (data.current_map !== currentValues.current_map) {
+                    document.getElementById('current-map').textContent = data.current_map || '';
+                    currentValues.current_map = data.current_map;
+                }
+
+                // Handle before map
+                const beforeSection = document.getElementById('before-map-section');
+                if (data.show_before_map === 'true' && data.before_map) {
+                    beforeSection.classList.remove('hidden');
+                    if (data.before_map !== currentValues.before_map) {
+                        document.getElementById('before-map').textContent = data.before_map;
+                        currentValues.before_map = data.before_map;
+                    }
+                } else {
+                    beforeSection.classList.add('hidden');
+                }
+
+                // Handle next map
+                const nextSection = document.getElementById('next-map-section');
+                if (data.show_next_map === 'true' && data.next_map) {
+                    nextSection.classList.remove('hidden');
+                    if (data.next_map !== currentValues.next_map) {
+                        document.getElementById('next-map').textContent = data.next_map;
+                        currentValues.next_map = data.next_map;
+                    }
+                } else {
+                    nextSection.classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error('Error updating map bar:', error);
+            }
+        }
+
+        // Initial update
+        updateMapBar();
+
+        // Update every second
+        setInterval(updateMapBar, 1000);
+    </script>
+</body>
+</html>

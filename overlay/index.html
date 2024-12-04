@@ -3,183 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valorant Tournament Overlay</title>
+    <title>Valorant Team Display</title>
     <style>
         :root {
-            --team1-color: rgb(76, 229, 201);
-            --team2-color: rgb(255, 139, 139);
-            --accent-line: #FF4655;
+            --accent-color: #FF4655;
+            --bg-dark: rgba(17, 17, 17, 0.85);
+            --team1-gradient: rgba(20, 181, 176, 0.15);
+            --team2-gradient: rgba(255, 70, 85, 0.15);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
         }
 
         body {
             width: 1920px;
-            height: 97px;
+            height: 90px;
             overflow: hidden;
             background: transparent;
+            padding-top: 10px;
         }
 
-        .scoreboard-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            background: transparent;
-        }
-
-        .top-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--accent-line);
-            z-index: 2;
-            opacity: 0.8;
-        }
-
-        .scoreboard {
-            width: 100%;
-            height: 100%;
+        .main-container {
+            width: 800px;
+            height: 60px;
+            background: var(--bg-dark);
+            margin: 0 auto;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 40px;
-            padding: 0 20px;
+            position: relative;
+            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
         }
 
         .team-section {
             display: flex;
             align-items: center;
-            gap: 20px;
-            min-width: 200px;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 8px 20px;
+            height: 100%;
+            padding: 0 20px;
+            min-width: 280px;
+        }
+
+        .team-left {
+            background: linear-gradient(90deg, var(--team1-gradient), transparent);
+            justify-content: flex-start;
+            clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .team-right {
+            background: linear-gradient(270deg, var(--team2-gradient), transparent);
+            justify-content: flex-end;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
+        }
+
+        .team-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 4px;
+            padding: 3px;
+            margin: 0 10px;
+        }
+
+        .team-logo.hidden {
+            display: none;
         }
 
         .team-name {
             font-size: 24px;
-            font-weight: 600;
+            font-weight: bold;
             text-transform: uppercase;
+            color: white;
             letter-spacing: 1px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 0 10px;
         }
 
-        .team-left .team-name {
-            color: var(--team1-color);
-        }
-
-        .team-right .team-name {
-            color: var(--team2-color);
-        }
-
-        .stage-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            min-width: 150px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 8px 20px;
-            border-radius: 4px;
+        .center-section {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-dark);
+            padding: 10px 25px;
+            min-width: 160px;
+            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 100%, 0 100%);
         }
 
         .match-stage {
-            color: white;
+            color: var(--accent-color);
             font-size: 20px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            text-align: center;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .map-name {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            text-transform: uppercase;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .diagonal-line {
-            width: 15px;
+        .red-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 2px;
-            background: var(--accent-line);
-            opacity: 0.8;
-        }
-
-        .diagonal-line.left {
-            transform: rotate(45deg);
-        }
-
-        .diagonal-line.right {
-            transform: rotate(-45deg);
+            background: var(--accent-color);
         }
     </style>
 </head>
 <body>
-    <div class="scoreboard-container">
-        <div class="top-line"></div>
-        <div class="scoreboard">
-            <!-- Team 1 Section -->
-            <div class="team-section team-left">
-                <div class="team-name" id="team1-name">TEAM 1</div>
-            </div>
+    <div class="main-container">
+        <div class="red-line"></div>
+        
+        <!-- Team 1 Section -->
+        <div class="team-section team-left">
+            <img id="team1-logo" class="team-logo hidden" alt="Team 1">
+            <div class="team-name" id="team1-name"></div>
+        </div>
 
-            <!-- Center Section -->
-            <div class="stage-container">
-                <div class="match-stage">
-                    <div class="diagonal-line left"></div>
-                    <span id="event-stage">FINAL</span>
-                    <div class="diagonal-line right"></div>
-                </div>
-                <div class="map-name" id="map-name"></div>
-            </div>
+        <!-- Center Section -->
+        <div class="center-section">
+            <div class="match-stage" id="event-stage">FINAL</div>
+        </div>
 
-            <!-- Team 2 Section -->
-            <div class="team-section team-right">
-                <div class="team-name" id="team2-name">TEAM 2</div>
-            </div>
+        <!-- Team 2 Section -->
+        <div class="team-section team-right">
+            <div class="team-name" id="team2-name"></div>
+            <img id="team2-logo" class="team-logo hidden" alt="Team 2">
         </div>
     </div>
-
-    <script>
-        function updateElement(element, value) {
-            if (value === undefined || value === null) return;
-            element.textContent = value;
-        }
+<script>
+        let currentLogos = {
+            team1: '',
+            team2: ''
+        };
 
         async function updateOverlay() {
             try {
                 const response = await fetch('http://localhost:8080/data');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
+                console.log('Received data:', data);  // Debug log
 
-                // Update elements
-                updateElement(document.getElementById('team1-name'), data.team1_name);
-                updateElement(document.getElementById('team2-name'), data.team2_name);
-                updateElement(document.getElementById('event-stage'), data.event_stage);
-                updateElement(document.getElementById('map-name'), data.map_name);
+                // Update team names
+                document.getElementById('team1-name').textContent = data.team1_name || '';
+                document.getElementById('team2-name').textContent = data.team2_name || '';
+                
+                // Update event stage
+                document.getElementById('event-stage').textContent = data.event_stage || '';
+
+                // Update team logos
+                if (data.team1_logo && data.team1_logo !== currentLogos.team1) {
+                    const logo1 = document.getElementById('team1-logo');
+                    logo1.src = `http://localhost:8080${data.team1_logo}`;
+                    logo1.classList.remove('hidden');
+                    currentLogos.team1 = data.team1_logo;
+                    console.log('Updated team1 logo:', data.team1_logo);  // Debug log
+                }
+
+                if (data.team2_logo && data.team2_logo !== currentLogos.team2) {
+                    const logo2 = document.getElementById('team2-logo');
+                    logo2.src = `http://localhost:8080${data.team2_logo}`;
+                    logo2.classList.remove('hidden');
+                    currentLogos.team2 = data.team2_logo;
+                    console.log('Updated team2 logo:', data.team2_logo);  // Debug log
+                }
 
             } catch (error) {
                 console.error('Error updating overlay:', error);
             }
         }
 
-        // Update every second
-        setInterval(updateOverlay, 1000);
+        // Add error handlers for logos
+        document.getElementById('team1-logo').onerror = function() {
+            console.error('Failed to load team1 logo');
+            this.classList.add('hidden');
+        };
+
+        document.getElementById('team2-logo').onerror = function() {
+            console.error('Failed to load team2 logo');
+            this.classList.add('hidden');
+        };
+
         // Initial update
         updateOverlay();
+
+        // Update every second
+        setInterval(updateOverlay, 1000);
     </script>
 </body>
 </html>

@@ -5,13 +5,18 @@
     },
     "paths": {
         "data_dir": "data",
-        "assets_dir": "assets",
+        "assets_dir": "assets/logos",
         "overlay_dir": "overlay"
     },
     "defaults": {
-        "team1_color": "#2d7a5d",
-        "team2_color": "#7a2d2d",
-        "stage": "FINAL"
+        "team1_name": "TEAM 1",
+        "team2_name": "TEAM 2",
+        "event_stage": "FINAL",
+        "tournament_info": "TOURNAMENT"
     },
-    "update_interval": 1000
+    "update_interval": 1000,
+    "logos": {
+        "max_size": 1024,
+        "allowed_types": [".png", ".jpg", ".jpeg"]
+    }
 }
