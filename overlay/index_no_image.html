@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Team Display</title>
+    <style>
+        :root {
+            --accent-color: #FF4655;
+            --bg-dark: rgba(17, 17, 17, 0.85);
+            --team1-gradient: rgba(20, 181, 176, 0.15);
+            --team2-gradient: rgba(255, 70, 85, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            width: 1920px;
+            height: 90px;
+            overflow: hidden;
+            background: transparent;
+            padding-top: 10px;
+        }
+
+        .main-container {
+            width: 800px;
+            height: 60px;
+            background: var(--bg-dark);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
+        }
+
+        .team-section {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 20px;
+            min-width: 280px;
+        }
+
+        .team-left {
+            background: linear-gradient(90deg, var(--team1-gradient), transparent);
+            justify-content: flex-start;
+            clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .team-right {
+            background: linear-gradient(270deg, var(--team2-gradient), transparent);
+            justify-content: flex-end;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
+        }
+
+        .team-name {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: white;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 0 10px;
+        }
+
+        .center-section {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-dark);
+            padding: 10px 25px;
+            min-width: 160px;
+            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 100%, 0 100%);
+        }
+
+        .match-stage {
+            color: var(--accent-color);
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .red-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="red-line"></div>
+        
+        <!-- Team 1 Section -->
+        <div class="team-section team-left">
+            <div class="team-name" id="team1-name"></div>
+        </div>
+
+        <!-- Center Section -->
+        <div class="center-section">
+            <div class="match-stage" id="event-stage">FINAL</div>
+        </div>
+
+        <!-- Team 2 Section -->
+        <div class="team-section team-right">
+            <div class="team-name" id="team2-name"></div>
+        </div>
+    </div>
+<script>
+        async function updateOverlay() {
+            try {
+                const response = await fetch('http://localhost:8080/data');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Received data:', data);  // Debug log
+
+                // Update team names
+                document.getElementById('team1-name').textContent = data.team1_name || '';
+                document.getElementById('team2-name').textContent = data.team2_name || '';
+                
+                // Update event stage
+                document.getElementById('event-stage').textContent = data.event_stage || '';
+
+            } catch (error) {
+                console.error('Error updating overlay:', error);
+            }
+        }
+
+        // Initial update
+        updateOverlay();
+
+        // Update every second
+        setInterval(updateOverlay, 1000);
+    </script>
+</body>
+</html>
